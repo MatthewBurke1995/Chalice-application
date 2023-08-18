@@ -1,7 +1,6 @@
 from chalice.app import Chalice
 from chalice.app import Rate
 
-from chalicelib.bayesian_football import *
 import json
 import boto3  
 import ast

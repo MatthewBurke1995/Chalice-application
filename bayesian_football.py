@@ -5,14 +5,10 @@ import jax.numpy as jnp
 from jax import random
 from jax._src.array import ArrayImpl
 
-import os
-import math
 import warnings
 warnings.filterwarnings('ignore')
 
-import numpy as np
 import pandas as pd
-import lxml
 import json
 
 
@@ -102,23 +98,11 @@ def model(observed_home_goals, observed_away_goals, num_teams, home_team, away_t
     numpyro.sample('away_goals', dist.Poisson(away_theta), obs=observed_away_goals)
 
 
-def predict_score(intercept,home_advantage,home_attack,away_defence, away_attack, home_defence):
-    home_goals = np.random.poisson(np.exp(intercept + home_advantage  + home_attack + away_defence))
-    away_goals = np.random.poisson(np.exp(intercept + away_attack + home_defence))
-    return home_goals,away_goals
-
 class NumpyEncoder(json.JSONEncoder):
     """ Special json encoder for numpy types """
     def default(self, obj):
-        if isinstance(obj, np.integer):
-            return int(obj)
-        elif isinstance(obj, np.floating):
-            return float(obj)
-        elif isinstance(obj, np.ndarray):
+        if isinstance(obj, ArrayImpl):
             return obj.tolist()
-        elif isinstance(obj, ArrayImpl):
-            return obj.tolist()
-        return json.JSONEncoder.default(self, obj)
 
 
 if __name__ == "__main__":
