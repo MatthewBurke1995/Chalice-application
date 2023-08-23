@@ -1,30 +1,12 @@
 from chalice.app import Chalice
-from chalice.app import Rate
 
 import json
 import boto3  
 import ast
 import numpy as np
 
-#from chalicelib.bayesian_football import NumpyEncoder, generate_trace
 
 app = Chalice(app_name='bayesianfootball')
-
-"""
-@app.schedule(Rate(7, unit=Rate.DAYS))
-@app.route('/trace')
-def save_trace_to_s3():
-    trace = generate_trace()
-    json_data = json.dumps(trace, cls=NumpyEncoder)
-    s3 = boto3.resource('s3')
-    
-    s3object = s3.Object('bayesian-soccer-traces-matthew-burke', 'latest_trace.json')
-    
-    s3object.put(
-        Body=(bytes(json.dumps(json_data).encode('UTF-8')))
-    )
-    return {"response":"trace_updated"}
-"""
 
 @app.route('/')
 def index():
@@ -85,7 +67,7 @@ def match_prediction(home,away):
     home_wins =0
     away_wins=0
     draws=0
-    for i in range(100):
+    for _ in range(100):
         home_goals, away_goals =predict_score(intercept,home_advantage,home_attack,away_defence, away_attack, home_defence)
         if home_goals > away_goals:
             home_wins+=1
@@ -101,7 +83,7 @@ def match_prediction(home,away):
                                        "away_wins":away_wins}}}
             
 
-def predict_score(intercept,home_advantage,home_attack,away_defence, away_attack, home_defence):
+def predict_score(intercept, home_advantage, home_attack, away_defence, away_attack, home_defence):
     home_goals = np.random.poisson(np.exp(intercept + home_advantage  + home_attack + away_defence))
     away_goals = np.random.poisson(np.exp(intercept + away_attack + home_defence))
     return home_goals,away_goals
